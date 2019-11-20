@@ -31,7 +31,18 @@ const state = {
 // mutations
 const mutations = {
   [types.default.SET_ALL_CONVERSATION](_state, conversationList) {
-    _state.allConversations = conversationList;
+    const newAllConversations = [..._state.allConversations];
+    conversationList.forEach(conversation => {
+      const indexInCurrentList = newAllConversations.findIndex(
+        c => c.id === conversation.id
+      );
+      if (indexInCurrentList > -1) {
+        newAllConversations[indexInCurrentList] = conversation;
+      } else {
+        newAllConversations.push(conversation);
+      }
+    });
+    _state.allConversations = newAllConversations;
   },
 
   [types.default.EMPTY_ALL_CONVERSATION](_state) {
