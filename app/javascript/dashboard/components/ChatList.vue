@@ -85,17 +85,8 @@ export default {
       chatListLoading: 'getChatListLoadingStatus',
       currentUserID: 'getCurrentUserID',
       activeInbox: 'getSelectedInbox',
+      convStats: 'getConvTabStats',
     }),
-    convStats() {
-      const mineCount = this.mineChatsList.length;
-      const unAssignedCount = this.unAssignedChatsList.length;
-      const allCount = this.allChatList.length;
-      return {
-        mineCount,
-        unAssignedCount,
-        allCount,
-      };
-    },
     assigneeTabItems() {
       return this.$t('CHAT_LIST.ASSIGNEE_TYPE_TABS').map((item, index) => ({
         id: index,
@@ -122,22 +113,28 @@ export default {
       if (this.chatLists.length === 0) {
         this.$store.dispatch('fetchAllConversations', {
           inboxId: this.conversationInbox ? this.conversationInbox : undefined,
-          assigneeStatus: this.allMessageType,
+          assigneeStatus: this.activeStatusTab,
           convStatus: this.activeStatusTab,
         });
       }
     },
     getDataForTab(index) {
       this.activeAssigneeTab = index;
-      if (!(index in this.chatLists)) {
-        // this.$store.dispatch('fetchList', {
-        //   inbox: this.conversationInbox,
-        //   type: index,
-        // });
-      }
+      this.$store.dispatch('fetchAllConversations', {
+        inboxId: this.conversationInbox ? this.conversationInbox : undefined,
+        assigneeStatus: this.activeAssigneeTab,
+        convStatus: this.activeStatusTab,
+      });
     },
     getDataForStatusTab(index) {
-      this.activeStatusTab = index;
+      if (this.activeStatusTab !== index) {
+        this.activeStatusTab = index;
+        this.$store.dispatch('fetchAllConversations', {
+          inboxId: this.conversationInbox ? this.conversationInbox : undefined,
+          assigneeStatus: this.allMessageType,
+          convStatus: this.activeStatusTab,
+        });
+      }
     },
     getChatsForTab() {
       let copyList = [];

@@ -30,8 +30,8 @@ const state = {
 
 // mutations
 const mutations = {
-  [types.default.SET_ALL_CONVERSATION](_state, chatList) {
-    _state.allConversations.push(...chatList);
+  [types.default.SET_ALL_CONVERSATION](_state, conversationList) {
+    _state.allConversations = conversationList;
   },
 
   [types.default.EMPTY_ALL_CONVERSATION](_state) {
@@ -71,14 +71,14 @@ const mutations = {
   [types.default.SET_CONV_TAB_META](
     _state,
     {
-      overdue_count: overdueCount,
+      mine_count: mineCount,
+      unassigned_count: unAssignedCount,
       all_count: allCount,
-      open_count: openCount,
     } = {}
   ) {
-    Vue.set(_state.convTabStats, 'overdueCount', overdueCount);
-    Vue.set(_state.convTabStats, 'allConvCount', allCount);
-    Vue.set(_state.convTabStats, 'openCount', openCount);
+    Vue.set(_state.convTabStats, 'mineCount', mineCount);
+    Vue.set(_state.convTabStats, 'allCount', allCount);
+    Vue.set(_state.convTabStats, 'unAssignedCount', unAssignedCount);
   },
 
   [types.default.CURRENT_CHAT_WINDOW](_state, activeChat) {

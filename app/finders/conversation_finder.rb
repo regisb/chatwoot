@@ -27,12 +27,21 @@ class ConversationFinder
     set_inboxes
     set_assignee_type
 
-    find_all_conversations # find all with the inbox
-    filter_by_assignee_type # filter by assignee
-    open_count, resolved_count = set_count_for_all_conversations # fetch count for both before filtering by status
+    find_all_conversations
+    filter_by_status
 
-    { conversations: @conversations.latest,
-      count: { open: open_count, resolved: resolved_count } }
+    mine_count, unassigned_count, all_count = find_conversation_count
+
+    filter_by_assignee_type
+
+    {
+      conversations: @conversations.latest,
+      count: {
+        mine_count: mine_count,
+        unassigned_count: unassigned_count,
+        all_count: all_count
+      }
+    }
   end
 
   private
@@ -51,11 +60,18 @@ class ConversationFinder
 
   def set_assignee_type
     @assignee_type_id = ASSIGNEE_TYPES[ASSIGNEE_TYPES_BY_ID[params[:assignee_type_id].to_i]]
-    # ente budhiparamaya neekam kandit enthu tonunu? ;)
   end
 
   def find_all_conversations
     @conversations = current_account.conversations.where(inbox_id: @inbox_ids)
+  end
+
+  def filter_by_status
+    if params[:conversation_status_id].to_i.zero?
+      @conversations = @conversations.open
+    else
+      @conversations = @conversations.resolved
+    end
   end
 
   def filter_by_assignee_type
@@ -69,7 +85,11 @@ class ConversationFinder
     @conversations
   end
 
-  def set_count_for_all_conversations
-    [@conversations.open.count, @conversations.resolved.count]
+  def find_conversation_count
+    [
+      @conversations.assigned_to(current_user).count,
+      @conversations.unassigned.count,
+      @conversations.count
+    ]
   end
 end
