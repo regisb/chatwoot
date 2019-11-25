@@ -38,7 +38,9 @@ class Api::V1::Widget::MessagesController < ActionController::Base
       inbox_id: inbox.id,
       contact_id: cookie_params[:contact_id],
       additional_attributes: {
-        browser: browser_params
+        browser: browser_params,
+        referer: permitted_params[:referer_url],
+        initiated_at: timestamp_params
       }
     }
   end
@@ -50,6 +52,16 @@ class Api::V1::Widget::MessagesController < ActionController::Base
       device_name: browser.device.name,
       platform_name: browser.platform.name,
       platform_version: browser.platform.version
+    }
+  end
+
+  def timestamp_params
+    # rubocop:disable Rails/TimeZone
+    time = ::Time.parse(permitted_params[:timestamp])
+    # rubocop:enable Rails/TimeZone
+    {
+      zone: time.zone,
+      timestamp: permitted_params[:timestamp]
     }
   end
 
@@ -78,7 +90,7 @@ class Api::V1::Widget::MessagesController < ActionController::Base
   end
 
   def permitted_params
-    params.fetch(:message).permit(:content)
+    params.fetch(:message).permit(:content, :timestamp, :referer_url)
   end
 
   def secret_key
