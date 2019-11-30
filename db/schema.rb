@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_26_185833) do
+ActiveRecord::Schema.define(version: 2019_11_30_164019) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -138,6 +138,8 @@ ActiveRecord::Schema.define(version: 2019_11_26_185833) do
     t.integer "user_id"
     t.integer "status", default: 0
     t.string "fb_id"
+    t.integer "content_type", default: 0
+    t.json "content_attributes", default: {}
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
   end
 
